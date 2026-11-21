@@ -77,12 +77,16 @@ In the UI, every reply shows source, model, latency, and input/output tokens for
 
 ## 5. Setup Used: your editor and AI tools
 
-- Editor: `<your editor>`
-- AI tools: Claude was used to draft and review the code; all behavior was checked against the assignment contract with the included tests.
+- Editor: Visual Studio Code on Windows
+- AI tools: Claude (Anthropic) for generating and debugging the code
 
-## 6. Bonus features (if any)
+## 6. Bonus features 
 
-- Per-session system prompt field (stored server-side and reused for the session).
-- In-UI failure simulation field for demos.
-- `key_id` and failed-key count shown next to each reply.
-- Optional disk cache (`CACHE_TYPE=disk`) that survives restarts.
+- **Per-session system prompt:** an optional field in the UI. The backend stores it per session and reuses it on later messages.
+- **In-UI failure simulation:** a "Simulate key failure" field in Session settings sends the `X-Simulate-Failure` header, so failover can be demoed without curl.
+- **Key and failover details in the UI:** each reply shows which key answered and how many keys failed before it.
+- **Optional disk cache:** set `CACHE_TYPE=disk` and the LiteLLM cache survives restarts.
+- **Cache warm-up at startup:** LiteLLM loads some modules lazily on the first cache hit, so a startup warm-up keeps the first real cache hit fast.
+- **Debug mode:** `DEBUG_ERRORS=true` adds a per-key `errors` list to the 503 body to help find provider problems. It's off by default.
+- **Test suite:** 14 backend tests cover caching, failover, validation, history and multi-turn context.
+- **Render config:** `render.yaml` describes the deployment.
