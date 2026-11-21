@@ -70,8 +70,11 @@ def chat(body: ChatRequest, x_simulate_failure: str | None = Header(default=None
 
     try:
         result = llm.generate(messages, sim)
-    except llm.AllProvidersUnavailable:
-        raise HTTPException(status_code=503, detail="all providers unavailable")
+    except llm.AllProvidersUnavailable as exc:
+        body_503 = {"detail": "all providers unavailable"}
+        if settings.debug_errors:  # temporary diagnostics, off by default
+            body_503["errors"] = exc.errors
+        return JSONResponse(status_code=503, content=body_503)
 
     metadata = {
         "resolution_source": result.resolution_source,
