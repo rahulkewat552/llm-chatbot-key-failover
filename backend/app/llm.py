@@ -116,10 +116,8 @@ def generate(messages: list[dict], sim: dict[str, int] | None = None) -> LLMResu
                 use_cache = False  # never serve or store an empty reply
                 raise ValueError("empty reply from provider")
         except Exception as exc:  # 429, quota, 5xx, timeouts, auth, empty reply -> next key
-            log.warning(
-                "%s failed (%s, status=%s); trying next key",
-                key_id, type(exc).__name__, getattr(exc, "status_code", None),
-            )
+                        detail = str(exc).replace(api_key, "***")[:300]
+            print(f"[failover] {key_id} failed: {type(exc).__name__} status={getattr(exc, 'status_code', None)} {detail}", flush=True)
             attempts += 1
             continue
 
