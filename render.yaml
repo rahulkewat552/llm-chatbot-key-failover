@@ -1,0 +1,39 @@
+# Render Blueprint. SQLite needs a persistent disk, which Render only offers on paid instance types.
+services:
+  - type: web
+    name: llm-chat-backend
+    runtime: docker
+    rootDir: backend
+    plan: starter
+    healthCheckPath: /health
+    disk:
+      name: app-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: LLM_API_KEYS
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false   # set to your frontend URL, e.g. https://llm-chat-frontend.onrender.com
+      - key: LLM_MODEL
+        value: gemini/gemini-2.5-flash
+      - key: DATABASE_URL
+        value: sqlite:////data/app.db
+      - key: CACHE_DIR
+        value: /data/llm_cache
+      - key: ENABLE_FAILURE_SIMULATION
+        value: "true"
+
+  - type: web
+    name: llm-chat-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false   # set to your backend URL, e.g. https://llm-chat-backend.onrender.com
