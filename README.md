@@ -5,8 +5,7 @@ React + FastAPI + SQLite chatbot. LiteLLM provides the key-pool failover and the
 ## 1. Live URLs
 
 - Frontend: https://llm-chatbot-key-failover-1.onrender.com/
-- Backend: `[<add after deploy>](https://llm-chat-failover-backend.onrender.com/)` (try `/health`)
-- Demo video: `<add link>`
+- Backend: https://llm-chat-failover-backend.onrender.com/
 
 ## 2. Run locally: with Docker and without
 
