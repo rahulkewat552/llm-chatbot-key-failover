@@ -39,7 +39,7 @@ class Settings:
             database_url=os.getenv("DATABASE_URL", "sqlite:///./app.db"),
             allowed_origins=[o.rstrip("/") for o in _list(os.getenv("ALLOWED_ORIGINS", "http://localhost:3000"))],
             enable_failure_simulation=_bool(os.getenv("ENABLE_FAILURE_SIMULATION")),
-            model=os.getenv("LLM_MODEL", "gemini/gemini-2.5-flash"),
+            model=os.getenv("LLM_MODEL", "gemini/gemini-flash-lite-latest"),
             default_system_prompt=os.getenv(
                 "DEFAULT_SYSTEM_PROMPT", "You are a helpful, concise assistant."
             ),
