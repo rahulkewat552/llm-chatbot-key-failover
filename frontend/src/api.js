@@ -1,7 +1,11 @@
 export const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 function describeError(status, body) {
-  if (status === 503) return "All AI providers are unavailable right now. Try again in a moment.";
+  if (status === 503) {
+    const base = "All AI providers are unavailable right now. Try again in a moment.";
+    const errs = Array.isArray(body?.errors) ? body.errors : [];
+    return errs.length ? base + "\n" + errs.map((e) => `${e.key_id}: ${e.error}`).join("\n") : base;
+  }
   if (status === 422) {
     const first = Array.isArray(body?.detail) ? body.detail[0] : null;
     const field = first?.loc?.[first.loc.length - 1];
