@@ -18,7 +18,9 @@ _usage_by_digest: dict[str, tuple[int, int]] = {}
 
 
 class AllProvidersUnavailable(Exception):
-    pass
+    def __init__(self, errors=None):
+        super().__init__("all providers unavailable")
+        self.errors = errors or []
 
 
 @dataclass
@@ -88,6 +90,7 @@ def generate(messages: list[dict], sim: dict[str, int] | None = None) -> LLMResu
     # A simulated-failure request must exercise the key pool, so it bypasses the cache.
     use_cache = not sim
     attempts = 0
+    errors: list[dict] = []
 
     for index, api_key in enumerate(settings.api_keys, start=1):
         key_id = f"key_{index}"
@@ -95,6 +98,7 @@ def generate(messages: list[dict], sim: dict[str, int] | None = None) -> LLMResu
         if simulated:
             log.warning("%s: simulated provider status %s", key_id, simulated)
             attempts += 1
+            errors.append({"key_id": key_id, "error": f"simulated {simulated}"})
             continue
 
         kwargs = dict(
@@ -123,6 +127,7 @@ def generate(messages: list[dict], sim: dict[str, int] | None = None) -> LLMResu
                 flush=True,
             )
             attempts += 1
+            errors.append({"key_id": key_id, "error": f"{type(exc).__name__} {getattr(exc, 'status_code', None)}: {detail[:200]}"})
             continue
 
         usage = getattr(response, "usage", None)
@@ -138,4 +143,4 @@ def generate(messages: list[dict], sim: dict[str, int] | None = None) -> LLMResu
         _usage_by_digest[digest] = (in_tok, out_tok)
         return LLMResult(reply, "LIVE_INFERENCE", settings.model, in_tok, out_tok, key_id, attempts)
 
-    raise AllProvidersUnavailable()
+    raise AllProvidersUnavailable(errors)
