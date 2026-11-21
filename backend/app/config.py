@@ -21,6 +21,7 @@ class Settings:
     cache_type: str
     cache_dir: str
     request_timeout: int
+    debug_errors: bool
     mock_response: str | None  # test-only: LiteLLM returns this instead of calling the provider
 
     @property
@@ -45,6 +46,7 @@ class Settings:
             cache_type=os.getenv("CACHE_TYPE", "local").lower(),
             cache_dir=os.getenv("CACHE_DIR", "/data/llm_cache"),
             request_timeout=int(os.getenv("REQUEST_TIMEOUT", "30")),
+            debug_errors=_bool(os.getenv("DEBUG_ERRORS")),
             mock_response=os.getenv("LLM_MOCK_RESPONSE") or None,
         )
 
