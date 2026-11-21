@@ -16,7 +16,7 @@ services:
       - key: ALLOWED_ORIGINS
         sync: false   # set to your frontend URL, e.g. https://llm-chat-frontend.onrender.com
       - key: LLM_MODEL
-        value: gemini/gemini-2.5-flash
+        value: gemini/gemini-flash-lite-latest
       - key: DATABASE_URL
         value: sqlite:////data/app.db
       - key: CACHE_DIR
